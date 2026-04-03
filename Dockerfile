@@ -1,11 +1,7 @@
-FROM php:8.3-cli
+FROM dunglas/frankenphp:php8.3-bookworm
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git unzip libicu-dev libzip-dev libpng-dev libjpeg-dev libfreetype6-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql intl gd zip opcache \
-    && rm -rf /var/lib/apt/lists/*
+# Install PHP extensions
+RUN install-php-extensions pdo_mysql intl gd zip opcache
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -16,11 +12,10 @@ COPY . .
 # Install dependencies
 RUN composer install --optimize-autoloader
 
-# Build cache (needs dummy env vars at build time)
-RUN APP_SECRET=build_placeholder DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db" \
+# Build cache
+RUN APP_SECRET=build DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db" \
     php bin/console cache:clear --env=prod
 
-# Create writable directories
 RUN mkdir -p public/uploads/products var/cache var/log \
     && chmod -R 777 public/uploads var
 
