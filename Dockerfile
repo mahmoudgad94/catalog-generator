@@ -14,13 +14,15 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN composer install --optimize-autoloader --no-dev
+RUN composer install --optimize-autoloader
 
-# Build cache
-RUN php bin/console cache:clear --env=prod
+# Build cache (needs dummy env vars at build time)
+RUN APP_SECRET=build_placeholder DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db" \
+    php bin/console cache:clear --env=prod
 
-# Create upload directory
-RUN mkdir -p public/uploads/products && chmod -R 777 public/uploads var
+# Create writable directories
+RUN mkdir -p public/uploads/products var/cache var/log \
+    && chmod -R 777 public/uploads var
 
 EXPOSE 8080
 
