@@ -26,7 +26,7 @@ class ProductImage
     #[Vich\UploadableField(mapping: 'product_images', fileNameProperty: 'filename')]
     private ?File $imageFile = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $filename = null;
 
     #[ORM\Column(length: 255, nullable: true)]

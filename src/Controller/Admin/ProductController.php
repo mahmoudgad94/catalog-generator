@@ -61,6 +61,7 @@ class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->filterEmptyImages($product);
             $this->saveCustomFields($product, $form, $cfRepo, $em);
             $em->persist($product);
             $em->flush();
@@ -85,6 +86,7 @@ class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->filterEmptyImages($product);
             $this->saveCustomFields($product, $form, $cfRepo, $em);
             $em->flush();
             $this->addFlash('success', 'Product updated.');
@@ -106,6 +108,15 @@ class ProductController extends AbstractController
             $this->addFlash('success', 'Product deleted.');
         }
         return $this->redirectToRoute('admin_product_index');
+    }
+
+    private function filterEmptyImages(Product $product): void
+    {
+        foreach ($product->getImages() as $image) {
+            if (!$image->getImageFile() && !$image->getFilename()) {
+                $product->removeImage($image);
+            }
+        }
     }
 
     private function saveCustomFields(
