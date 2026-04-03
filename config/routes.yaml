@@ -1,3 +1,7 @@
+home:
+    path: /
+    controller: App\Controller\HomeController::index
+
 admin_controllers:
     resource:
         path: ../src/Controller/Admin/
