@@ -1,0 +1,58 @@
+<form id="catalog-filters" class="card mb-4">
+    <div class="card-body">
+        <div class="row g-2 align-items-end">
+            {% for input in inputs %}
+                {% if input.inputType == 'search' %}
+                <div class="col-md-3">
+                    <label class="form-label">{{ input.label ?? 'Search' }}</label>
+                    <input type="text" name="search" class="form-control" value="{{ filters.search }}" placeholder="Search...">
+                </div>
+                {% elseif input.inputType == 'category_select' %}
+                <div class="col-md-2">
+                    <label class="form-label">{{ input.label ?? 'Category' }}</label>
+                    <select name="category" class="form-select">
+                        <option value="">All</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {{ filters.category == cat.id|string ? 'selected' }}>{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% elseif input.inputType == 'tag_select' %}
+                <div class="col-md-2">
+                    <label class="form-label">{{ input.label ?? 'Tag' }}</label>
+                    <select name="tag" class="form-select">
+                        <option value="">All</option>
+                        {% for t in tags %}
+                        <option value="{{ t.id }}" {{ filters.tag == t.id|string ? 'selected' }}>{{ t.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% elseif input.inputType == 'price_range' %}
+                <div class="col-md-1">
+                    <label class="form-label">{{ input.label ?? 'Min $' }}</label>
+                    <input type="number" name="price_min" class="form-control" value="{{ filters.price_min }}" placeholder="Min" step="0.01">
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label">Max $</label>
+                    <input type="number" name="price_max" class="form-control" value="{{ filters.price_max }}" placeholder="Max" step="0.01">
+                </div>
+                {% elseif input.inputType == 'sort_dropdown' %}
+                <div class="col-md-2">
+                    <label class="form-label">{{ input.label ?? 'Sort by' }}</label>
+                    <select name="sort" class="form-select">
+                        <option value="">Default</option>
+                        <option value="name_asc" {{ filters.sort == 'name_asc' ? 'selected' }}>Name A-Z</option>
+                        <option value="name_desc" {{ filters.sort == 'name_desc' ? 'selected' }}>Name Z-A</option>
+                        <option value="price_asc" {{ filters.sort == 'price_asc' ? 'selected' }}>Price Low-High</option>
+                        <option value="price_desc" {{ filters.sort == 'price_desc' ? 'selected' }}>Price High-Low</option>
+                        <option value="date_desc" {{ filters.sort == 'date_desc' ? 'selected' }}>Newest</option>
+                    </select>
+                </div>
+                {% endif %}
+            {% endfor %}
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+    </div>
+</form>

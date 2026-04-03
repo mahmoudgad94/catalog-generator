@@ -1,0 +1,36 @@
+<div class="card">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th style="width: 50px;"></th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Categories</th>
+                <th>Tags</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>
+                    {% if product.images|length > 0 %}
+                        <img src="/uploads/products/{{ product.images.first.filename }}" style="width: 40px; height: 40px; object-fit: cover;" class="rounded">
+                    {% endif %}
+                </td>
+                <td class="fw-bold">{{ product.name }}</td>
+                <td class="text-muted small">{{ product.description|slice(0, 80) }}{% if product.description|length > 80 %}...{% endif %}</td>
+                <td class="text-primary fw-bold">${{ product.price|number_format(2) }}</td>
+                <td>{% for cat in product.categories %}<span class="badge bg-secondary">{{ cat.name }}</span> {% endfor %}</td>
+                <td>{% for tag in product.tags %}<span class="badge bg-info">{{ tag.name }}</span> {% endfor %}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="text-muted text-center py-4">No products found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if pagination.totalItemCount > 24 %}
+<nav class="mt-4">{{ knp_pagination_render(pagination) }}</nav>
+{% endif %}

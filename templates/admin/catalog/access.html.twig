@@ -1,0 +1,84 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Catalog Access - {{ catalog.name }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Access: {{ catalog.name }}</h1>
+    <a href="{{ path('admin_catalog_index') }}" class="btn btn-outline-secondary">Back to list</a>
+</div>
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_edit', {id: catalog.id}) }}">General</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_filters', {id: catalog.id}) }}">Filters</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_sorts', {id: catalog.id}) }}">Sorts</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_inputs', {id: catalog.id}) }}">Inputs</a></li>
+    <li class="nav-item"><a class="nav-link active" href="{{ path('admin_catalog_access', {id: catalog.id}) }}">Access</a></li>
+</ul>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="{{ path('admin_catalog_access', {id: catalog.id}) }}">
+            <div class="mb-4">
+                <label class="form-label fw-bold">Access Mode</label>
+                {% for mode in modes %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="mode" id="mode_{{ mode.value }}"
+                           value="{{ mode.value }}" {{ access.mode == mode ? 'checked' }}
+                           onchange="togglePasswordSection()">
+                    <label class="form-check-label" for="mode_{{ mode.value }}">
+                        {{ mode.value|capitalize }}
+                        {% if mode.value == 'public' %} — Anyone with the link can view{% endif %}
+                        {% if mode.value == 'password' %} — Requires a password to access{% endif %}
+                        {% if mode.value == 'email' %} — Requires email to access (logged){% endif %}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div id="password-section" style="display: {{ access.mode.value == 'password' ? 'block' : 'none' }};">
+                <hr>
+                <h5>Passwords</h5>
+
+                {% if access.passwords|length > 0 %}
+                <table class="table table-sm mb-3">
+                    <thead><tr><th>Label</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        {% for pwd in access.passwords %}
+                        <tr>
+                            <td>{{ pwd.label ?? '(no label)' }}</td>
+                            <td>
+                                <label class="text-danger">
+                                    <input type="checkbox" name="remove_passwords[]" value="{{ pwd.id }}"> Remove
+                                </label>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <input type="text" name="new_password_label" class="form-control" placeholder="Label (e.g., Client A)">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input type="text" name="new_password" class="form-control" placeholder="New password">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Save Access Settings</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+function togglePasswordSection() {
+    var mode = $('input[name=mode]:checked').val();
+    $('#password-section').toggle(mode === 'password');
+}
+</script>
+{% endblock %}

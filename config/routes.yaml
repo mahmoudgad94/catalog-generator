@@ -1,0 +1,13 @@
+admin_controllers:
+    resource:
+        path: ../src/Controller/Admin/
+        namespace: App\Controller\Admin
+    type: attribute
+    prefix: /admin
+
+catalog_controllers:
+    resource:
+        path: ../src/Controller/Public/
+        namespace: App\Controller\Public
+    type: attribute
+    prefix: /c

@@ -1,0 +1,45 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Products{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Products</h1>
+    <a href="{{ path('admin_product_new') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> New Product
+    </a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form id="product-search" class="row g-2">
+            <div class="col-md-4">
+                <input type="text" class="form-control" name="search" placeholder="Search products..." value="{{ search }}">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-outline-secondary">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="product-list">
+    {% include 'admin/product/_list.html.twig' %}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+$(function() {
+    $('#product-search').on('submit', function(e) {
+        e.preventDefault();
+        var search = $(this).find('[name=search]').val();
+        $.get('{{ path("admin_product_index") }}', {search: search, ajax: 1}, function(html) {
+            $('#product-list').html(html);
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}{{ tag.id ? 'Edit' : 'New' }} Tag{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ tag.id ? 'Edit' : 'New' }} Tag</h1>
+    <a href="{{ path('admin_tag_index') }}" class="btn btn-outline-secondary">Back to list</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {{ form_start(form) }}
+            <div class="mb-3">
+                {{ form_row(form.name) }}
+            </div>
+            <button type="submit" class="btn btn-primary">{{ tag.id ? 'Update' : 'Create' }}</button>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

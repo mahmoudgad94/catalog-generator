@@ -1,0 +1,38 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Import Products{% endblock %}
+
+{% block body %}
+<h1 class="mb-4">Import Products from CSV</h1>
+
+<div class="card mb-4">
+    <div class="card-body">
+        {{ form_start(form, {'action': path('admin_import_upload'), 'attr': {'enctype': 'multipart/form-data'}}) }}
+            <div class="mb-3">
+                {{ form_row(form.csvFile) }}
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-upload"></i> Upload & Preview
+            </button>
+        {{ form_end(form) }}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">CSV Format</div>
+    <div class="card-body">
+        <p>Your CSV should have a header row. Supported columns:</p>
+        <table class="table table-sm">
+            <thead><tr><th>Column</th><th>Required</th><th>Notes</th></tr></thead>
+            <tbody>
+                <tr><td><code>name</code></td><td>Yes</td><td>Product name</td></tr>
+                <tr><td><code>description</code></td><td>No</td><td>Product description</td></tr>
+                <tr><td><code>price</code></td><td>No</td><td>Numeric price (e.g., 29.99)</td></tr>
+                <tr><td><code>tags</code></td><td>No</td><td>Pipe-delimited (e.g., tag1|tag2)</td></tr>
+                <tr><td><code>categories</code></td><td>No</td><td>Pipe-delimited with hierarchy via &gt; (e.g., Electronics &gt; Gadgets)</td></tr>
+                <tr><td><code>custom_field_*</code></td><td>No</td><td>Any column starting with custom_field_ maps to a custom field slug</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

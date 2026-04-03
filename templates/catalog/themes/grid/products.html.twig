@@ -1,0 +1,35 @@
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 col-sm-6 mb-4">
+        <div class="card product-card h-100">
+            {% if product.images|length > 0 %}
+                <img src="/uploads/products/{{ product.images.first.filename }}" class="card-img-top product-card" alt="{{ product.name }}">
+            {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <span class="text-muted">No image</span>
+                </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                {% if product.description %}
+                    <p class="card-text text-muted small">{{ product.description|slice(0, 100) }}{% if product.description|length > 100 %}...{% endif %}</p>
+                {% endif %}
+                <p class="card-text fw-bold text-primary">${{ product.price|number_format(2) }}</p>
+                {% for tag in product.tags %}
+                    <span class="badge bg-secondary">{{ tag.name }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <p class="text-muted text-center py-5">No products found matching your criteria.</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% if pagination.totalItemCount > 24 %}
+<nav class="mt-4">
+    {{ knp_pagination_render(pagination) }}
+</nav>
+{% endif %}

@@ -1,0 +1,102 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}{{ product.id ? 'Edit' : 'New' }} Product{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ product.id ? 'Edit' : 'New' }} Product</h1>
+    <a href="{{ path('admin_product_index') }}" class="btn btn-outline-secondary">Back to list</a>
+</div>
+
+{{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-header">Basic Info</div>
+            <div class="card-body">
+                <div class="mb-3">{{ form_row(form.name) }}</div>
+                <div class="mb-3">{{ form_row(form.description) }}</div>
+                <div class="mb-3">{{ form_row(form.price) }}</div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header">Images</div>
+            <div class="card-body">
+                <div id="images-container" data-prototype="{{ form_widget(form.images.vars.prototype)|e('html_attr') }}" data-index="{{ form.images|length }}">
+                    {% for imageForm in form.images %}
+                        <div class="image-entry mb-2 p-2 border rounded d-flex align-items-center gap-2">
+                            {% if imageForm.vars.data and imageForm.vars.data.filename %}
+                                <img src="/uploads/products/{{ imageForm.vars.data.filename }}" style="width: 60px; height: 60px; object-fit: cover;" class="rounded">
+                            {% endif %}
+                            {{ form_widget(imageForm.imageFile) }}
+                            {{ form_widget(imageForm.position) }}
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-image"><i class="bi bi-x"></i></button>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="button" id="add-image" class="btn btn-sm btn-outline-secondary mt-2">
+                    <i class="bi bi-plus-lg"></i> Add Image
+                </button>
+            </div>
+        </div>
+
+        {% set customFields = [] %}
+        {% for child in form.children|filter(child => child.vars.name starts with 'custom_') %}
+            {% set customFields = customFields|merge([child]) %}
+        {% endfor %}
+
+        {% if customFields|length > 0 %}
+        <div class="card mb-3">
+            <div class="card-header">Custom Fields</div>
+            <div class="card-body">
+                {% for field in customFields %}
+                    <div class="mb-3">{{ form_row(field) }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">Categories</div>
+            <div class="card-body">
+                {{ form_widget(form.categories, {'attr': {'size': 8}}) }}
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header">Tags</div>
+            <div class="card-body">
+                {{ form_widget(form.tags, {'attr': {'size': 6}}) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<button type="submit" class="btn btn-primary btn-lg">{{ product.id ? 'Update Product' : 'Create Product' }}</button>
+{{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+<script>
+$(function() {
+    var $container = $('#images-container');
+    var index = parseInt($container.data('index'));
+
+    $('#add-image').on('click', function() {
+        var prototype = $container.data('prototype');
+        var newForm = prototype.replace(/__name__/g, index);
+        var $entry = $('<div class="image-entry mb-2 p-2 border rounded d-flex align-items-center gap-2">' + newForm + '<button type="button" class="btn btn-sm btn-outline-danger remove-image"><i class="bi bi-x"></i></button></div>');
+        $container.append($entry);
+        index++;
+    });
+
+    $container.on('click', '.remove-image', function() {
+        $(this).closest('.image-entry').remove();
+    });
+});
+</script>
+{% endblock %}

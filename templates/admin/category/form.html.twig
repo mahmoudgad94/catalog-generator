@@ -1,0 +1,27 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}{{ category.id ? 'Edit' : 'New' }} Category{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ category.id ? 'Edit' : 'New' }} Category</h1>
+    <a href="{{ path('admin_category_index') }}" class="btn btn-outline-secondary">Back to list</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {{ form_start(form) }}
+            <div class="mb-3">
+                {{ form_row(form.name) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.parent) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.position) }}
+            </div>
+            <button type="submit" class="btn btn-primary">{{ category.id ? 'Update' : 'Create' }}</button>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

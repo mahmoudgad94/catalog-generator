@@ -1,0 +1,43 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}{{ catalog.id ? 'Edit' : 'New' }} Catalog{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ catalog.id ? 'Edit' : 'New' }} Catalog</h1>
+    <a href="{{ path('admin_catalog_index') }}" class="btn btn-outline-secondary">Back to list</a>
+</div>
+
+{% if catalog.id %}
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item"><a class="nav-link active" href="{{ path('admin_catalog_edit', {id: catalog.id}) }}">General</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_filters', {id: catalog.id}) }}">Filters</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_sorts', {id: catalog.id}) }}">Sorts</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_inputs', {id: catalog.id}) }}">Inputs</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_access', {id: catalog.id}) }}">Access</a></li>
+</ul>
+{% endif %}
+
+<div class="card">
+    <div class="card-body">
+        {{ form_start(form) }}
+            <div class="mb-3">{{ form_row(form.name) }}</div>
+            <div class="mb-3">{{ form_row(form.description) }}</div>
+            <div class="row">
+                <div class="col-md-6 mb-3">{{ form_row(form.template) }}</div>
+                <div class="col-md-6 mb-3 pt-4">{{ form_row(form.isPublished) }}</div>
+            </div>
+            {% if catalog.id and catalog.slug %}
+                <div class="mb-3">
+                    <label class="form-label">Public URL</label>
+                    <div class="input-group">
+                        <span class="input-group-text">/c/</span>
+                        <input type="text" class="form-control" value="{{ catalog.slug }}" readonly>
+                    </div>
+                </div>
+            {% endif %}
+            <button type="submit" class="btn btn-primary">{{ catalog.id ? 'Update' : 'Create' }}</button>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Import Result{% endblock %}
+
+{% block body %}
+<h1 class="mb-4">Import Complete</h1>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-bg-success">
+            <div class="card-body">
+                <h5>Created</h5>
+                <p class="display-4">{{ result.created }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-bg-warning">
+            <div class="card-body">
+                <h5>Skipped</h5>
+                <p class="display-4">{{ result.skipped }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-bg-primary">
+            <div class="card-body">
+                <h5>Total Rows</h5>
+                <p class="display-4">{{ result.total }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if result.errors|length > 0 %}
+<div class="card mb-4">
+    <div class="card-header text-bg-danger">Errors</div>
+    <div class="card-body">
+        <ul>
+            {% for row, rowErrors in result.errors %}
+                <li>Row {{ row }}: {{ rowErrors|join(', ') }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+<div class="d-flex gap-2">
+    <a href="{{ path('admin_product_index') }}" class="btn btn-primary">View Products</a>
+    <a href="{{ path('admin_import') }}" class="btn btn-outline-secondary">Import More</a>
+</div>
+{% endblock %}

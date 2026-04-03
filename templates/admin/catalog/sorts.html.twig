@@ -1,0 +1,78 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Catalog Sorts - {{ catalog.name }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Sorts: {{ catalog.name }}</h1>
+    <a href="{{ path('admin_catalog_index') }}" class="btn btn-outline-secondary">Back to list</a>
+</div>
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_edit', {id: catalog.id}) }}">General</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_filters', {id: catalog.id}) }}">Filters</a></li>
+    <li class="nav-item"><a class="nav-link active" href="{{ path('admin_catalog_sorts', {id: catalog.id}) }}">Sorts</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_inputs', {id: catalog.id}) }}">Inputs</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_access', {id: catalog.id}) }}">Access</a></li>
+</ul>
+
+<div class="card">
+    <div class="card-body">
+        <p class="text-muted">Define the default sort order for products in this catalog.</p>
+        <form method="post" action="{{ path('admin_catalog_sorts', {id: catalog.id}) }}">
+            <div id="sorts-container">
+                {% for sort in catalog.sorts %}
+                <div class="sort-row row mb-2 align-items-center">
+                    <div class="col-md-5">
+                        <select name="sorts[{{ loop.index0 }}][field]" class="form-select">
+                            <option value="">— Field —</option>
+                            <option value="name" {{ sort.field == 'name' ? 'selected' }}>Name</option>
+                            <option value="price" {{ sort.field == 'price' ? 'selected' }}>Price</option>
+                            <option value="created_at" {{ sort.field == 'created_at' ? 'selected' }}>Date Created</option>
+                            <option value="position" {{ sort.field == 'position' ? 'selected' }}>Position</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <select name="sorts[{{ loop.index0 }}][direction]" class="form-select">
+                            <option value="asc" {{ sort.direction == 'asc' ? 'selected' }}>Ascending</option>
+                            <option value="desc" {{ sort.direction == 'desc' ? 'selected' }}>Descending</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-sort"><i class="bi bi-x"></i></button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="add-sort" class="btn btn-sm btn-outline-secondary mb-3">
+                <i class="bi bi-plus-lg"></i> Add Sort
+            </button>
+            <div>
+                <button type="submit" class="btn btn-primary">Save Sorts</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+$(function() {
+    var sortIndex = {{ catalog.sorts|length }};
+
+    $('#add-sort').on('click', function() {
+        var row = '<div class="sort-row row mb-2 align-items-center">' +
+            '<div class="col-md-5"><select name="sorts[' + sortIndex + '][field]" class="form-select"><option value="">— Field —</option><option value="name">Name</option><option value="price">Price</option><option value="created_at">Date Created</option><option value="position">Position</option></select></div>' +
+            '<div class="col-md-5"><select name="sorts[' + sortIndex + '][direction]" class="form-select"><option value="asc">Ascending</option><option value="desc">Descending</option></select></div>' +
+            '<div class="col-md-2"><button type="button" class="btn btn-sm btn-outline-danger remove-sort"><i class="bi bi-x"></i></button></div>' +
+            '</div>';
+        $('#sorts-container').append(row);
+        sortIndex++;
+    });
+
+    $(document).on('click', '.remove-sort', function() {
+        $(this).closest('.sort-row').remove();
+    });
+});
+</script>
+{% endblock %}

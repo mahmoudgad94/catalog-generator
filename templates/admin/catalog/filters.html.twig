@@ -1,0 +1,84 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Catalog Filters - {{ catalog.name }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Filters: {{ catalog.name }}</h1>
+    <a href="{{ path('admin_catalog_index') }}" class="btn btn-outline-secondary">Back to list</a>
+</div>
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_edit', {id: catalog.id}) }}">General</a></li>
+    <li class="nav-item"><a class="nav-link active" href="{{ path('admin_catalog_filters', {id: catalog.id}) }}">Filters</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_sorts', {id: catalog.id}) }}">Sorts</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_inputs', {id: catalog.id}) }}">Inputs</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_access', {id: catalog.id}) }}">Access</a></li>
+</ul>
+
+<div class="card">
+    <div class="card-body">
+        <p class="text-muted">Define which products appear in this catalog by adding filter rules.</p>
+        <form method="post" action="{{ path('admin_catalog_filters', {id: catalog.id}) }}">
+            <div id="filters-container">
+                {% for filter in catalog.filters %}
+                <div class="filter-row row mb-2 align-items-center">
+                    <div class="col-md-4">
+                        <select name="filters[{{ loop.index0 }}][field]" class="form-select">
+                            <option value="">— Field —</option>
+                            <option value="name" {{ filter.field == 'name' ? 'selected' }}>Name</option>
+                            <option value="price" {{ filter.field == 'price' ? 'selected' }}>Price</option>
+                            <option value="category" {{ filter.field == 'category' ? 'selected' }}>Category</option>
+                            <option value="tag" {{ filter.field == 'tag' ? 'selected' }}>Tag</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="filters[{{ loop.index0 }}][operator]" class="form-select">
+                            {% for op in operators %}
+                            <option value="{{ op.value }}" {{ filter.operator == op ? 'selected' }}>{{ op.value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" name="filters[{{ loop.index0 }}][value]" class="form-control" value="{{ filter.value[0] ?? '' }}" placeholder="Value">
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-filter"><i class="bi bi-x"></i></button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="add-filter" class="btn btn-sm btn-outline-secondary mb-3">
+                <i class="bi bi-plus-lg"></i> Add Filter
+            </button>
+            <div>
+                <button type="submit" class="btn btn-primary">Save Filters</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+$(function() {
+    var filterIndex = {{ catalog.filters|length }};
+    var operators = '{% for op in operators %}<option value="{{ op.value }}">{{ op.value }}</option>{% endfor %}';
+
+    $('#add-filter').on('click', function() {
+        var row = '<div class="filter-row row mb-2 align-items-center">' +
+            '<div class="col-md-4"><select name="filters[' + filterIndex + '][field]" class="form-select"><option value="">— Field —</option><option value="name">Name</option><option value="price">Price</option><option value="category">Category</option><option value="tag">Tag</option></select></div>' +
+            '<div class="col-md-3"><select name="filters[' + filterIndex + '][operator]" class="form-select">' + operators + '</select></div>' +
+            '<div class="col-md-4"><input type="text" name="filters[' + filterIndex + '][value]" class="form-control" placeholder="Value"></div>' +
+            '<div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger remove-filter"><i class="bi bi-x"></i></button></div>' +
+            '</div>';
+        $('#filters-container').append(row);
+        filterIndex++;
+    });
+
+    $(document).on('click', '.remove-filter', function() {
+        $(this).closest('.filter-row').remove();
+    });
+});
+</script>
+{% endblock %}

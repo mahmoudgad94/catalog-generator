@@ -1,0 +1,76 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Catalog Inputs - {{ catalog.name }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Input Configuration: {{ catalog.name }}</h1>
+    <a href="{{ path('admin_catalog_index') }}" class="btn btn-outline-secondary">Back to list</a>
+</div>
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_edit', {id: catalog.id}) }}">General</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_filters', {id: catalog.id}) }}">Filters</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_sorts', {id: catalog.id}) }}">Sorts</a></li>
+    <li class="nav-item"><a class="nav-link active" href="{{ path('admin_catalog_inputs', {id: catalog.id}) }}">Inputs</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('admin_catalog_access', {id: catalog.id}) }}">Access</a></li>
+</ul>
+
+<div class="card">
+    <div class="card-body">
+        <p class="text-muted">Configure which filter inputs appear on the public catalog page.</p>
+        <form method="post" action="{{ path('admin_catalog_inputs', {id: catalog.id}) }}">
+            <div id="inputs-container">
+                {% for input in catalog.inputConfigs %}
+                <div class="input-row row mb-2 align-items-center">
+                    <div class="col-md-5">
+                        <select name="inputs[{{ loop.index0 }}][input_type]" class="form-select">
+                            <option value="">— Type —</option>
+                            <option value="search" {{ input.inputType == 'search' ? 'selected' }}>Text Search</option>
+                            <option value="category_select" {{ input.inputType == 'category_select' ? 'selected' }}>Category Select</option>
+                            <option value="tag_select" {{ input.inputType == 'tag_select' ? 'selected' }}>Tag Select</option>
+                            <option value="price_range" {{ input.inputType == 'price_range' ? 'selected' }}>Price Range</option>
+                            <option value="sort_dropdown" {{ input.inputType == 'sort_dropdown' ? 'selected' }}>Sort Dropdown</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" name="inputs[{{ loop.index0 }}][label]" class="form-control" value="{{ input.label ?? '' }}" placeholder="Custom label (optional)">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-input"><i class="bi bi-x"></i></button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="add-input" class="btn btn-sm btn-outline-secondary mb-3">
+                <i class="bi bi-plus-lg"></i> Add Input
+            </button>
+            <div>
+                <button type="submit" class="btn btn-primary">Save Inputs</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+$(function() {
+    var inputIndex = {{ catalog.inputConfigs|length }};
+
+    $('#add-input').on('click', function() {
+        var row = '<div class="input-row row mb-2 align-items-center">' +
+            '<div class="col-md-5"><select name="inputs[' + inputIndex + '][input_type]" class="form-select"><option value="">— Type —</option><option value="search">Text Search</option><option value="category_select">Category Select</option><option value="tag_select">Tag Select</option><option value="price_range">Price Range</option><option value="sort_dropdown">Sort Dropdown</option></select></div>' +
+            '<div class="col-md-5"><input type="text" name="inputs[' + inputIndex + '][label]" class="form-control" placeholder="Custom label (optional)"></div>' +
+            '<div class="col-md-2"><button type="button" class="btn btn-sm btn-outline-danger remove-input"><i class="bi bi-x"></i></button></div>' +
+            '</div>';
+        $('#inputs-container').append(row);
+        inputIndex++;
+    });
+
+    $(document).on('click', '.remove-input', function() {
+        $(this).closest('.input-row').remove();
+    });
+});
+</script>
+{% endblock %}

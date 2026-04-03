@@ -1,0 +1,98 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Categories{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .category-tree ul { list-style: none; padding-left: 1.5rem; }
+    .category-tree > ul { padding-left: 0; }
+    .category-item {
+        padding: 0.5rem 0.75rem;
+        margin: 0.25rem 0;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        cursor: move;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .category-item:hover { background: #e9ecef; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Categories</h1>
+    <a href="{{ path('admin_category_new') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> New Category
+    </a>
+</div>
+
+{% macro render_tree(categories) %}
+    <ul>
+    {% for category in categories %}
+        <li data-id="{{ category.id }}">
+            <div class="category-item">
+                <span>
+                    <i class="bi bi-grip-vertical text-muted me-2"></i>
+                    {{ category.name }}
+                    <small class="text-muted">({{ category.products|length }} products)</small>
+                </span>
+                <span>
+                    <a href="{{ path('admin_category_edit', {id: category.id}) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <form method="post" action="{{ path('admin_category_delete', {id: category.id}) }}" class="d-inline" onsubmit="return confirm('Delete this category?')">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    </form>
+                </span>
+            </div>
+            {% if category.children|length > 0 %}
+                {{ _self.render_tree(category.children) }}
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+{% endmacro %}
+
+<div class="category-tree">
+    {% if tree|length > 0 %}
+        {{ _self.render_tree(tree) }}
+    {% else %}
+        <p class="text-muted">No categories yet. Create your first category.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/jquery-ui@1.14.1/dist/jquery-ui.min.js"></script>
+<script>
+$(function() {
+    $('.category-tree ul').sortable({
+        connectWith: '.category-tree ul',
+        handle: '.bi-grip-vertical',
+        placeholder: 'bg-light border border-primary rounded p-2 my-1',
+        tolerance: 'pointer',
+        update: function(event, ui) {
+            var $item = ui.item;
+            var $parent = $item.parent().closest('li');
+            var parentId = $parent.length ? $parent.data('id') : null;
+            var position = $item.index();
+
+            $.ajax({
+                url: '{{ path("admin_category_reorder") }}',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    id: $item.data('id'),
+                    parentId: parentId,
+                    position: position
+                })
+            });
+        }
+    });
+});
+</script>
+{% endblock %}
