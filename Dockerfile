@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:php8.3-bookworm
+FROM dunglas/frankenphp:php8.4-bookworm
 
 # Install PHP extensions
 RUN install-php-extensions pdo_mysql intl gd zip opcache
