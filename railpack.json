@@ -1,0 +1,10 @@
+{
+  "$schema": "https://schema.railpack.com",
+  "steps": {
+    "extensions": {
+      "commands": [
+        "install-php-extensions pdo_mysql intl gd"
+      ]
+    }
+  }
+}
